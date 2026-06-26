@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cem Manit Timer</title>
+  <style>
+    :root {
+      --bg-1: #09030f;
+      --bg-2: #24101f;
+      --gold: #f6cf86;
+      --salmon: #ff7f8c;
+      --rose: #d94b72;
+      --text: #fff7ee;
+      --muted: #e8b2a4;
+      --heart: #ff9aae;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: var(--text);
+      font-family: Georgia, 'Times New Roman', serif;
+      background:
+        radial-gradient(circle at 50% 25%, rgba(255, 127, 140, 0.24), transparent 32rem),
+        radial-gradient(circle at 20% 80%, rgba(217, 75, 114, 0.27), transparent 28rem),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2) 55%, #07040b);
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -20vmax;
+      pointer-events: none;
+      background:
+        conic-gradient(from 0deg, transparent, rgba(246, 207, 134, 0.10), transparent, rgba(255, 127, 140, 0.14), transparent);
+      animation: slowSpin 28s linear infinite;
+      filter: blur(3px);
+    }
+
+    body::after {
+      animation-duration: 46s;
+      animation-direction: reverse;
+      opacity: 0.45;
+    }
+
+    @keyframes slowSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      width: min(96vw, 1280px);
+      padding: clamp(1.5rem, 5vw, 4rem);
+      text-align: center;
+      border: 1px solid rgba(255, 127, 140, 0.34);
+      border-radius: 32px;
+      background: rgba(8, 3, 15, 0.66);
+      box-shadow:
+        0 0 84px rgba(217, 75, 114, 0.30),
+        inset 0 0 50px rgba(246, 207, 134, 0.05);
+      backdrop-filter: blur(14px);
+    }
+
+    .eyebrow {
+      margin: 0 0 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .heart-icon {
+      width: clamp(24px, 3.2vw, 34px);
+      height: auto;
+      fill: var(--heart);
+      filter: drop-shadow(0 0 10px rgba(255, 154, 174, 0.28));
+      flex: 0 0 auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(3.4rem, 10vw, 9rem);
+      line-height: 0.88;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-shadow:
+        0 0 18px rgba(246, 207, 134, 0.26),
+        0 5px 0 rgba(0, 0, 0, 0.42),
+        0 14px 34px rgba(255, 127, 140, 0.44);
+    }
+
+    .timer {
+      margin: clamp(2rem, 6vw, 4rem) 0 1rem;
+      display: flex;
+      justify-content: center;
+      gap: clamp(0.6rem, 1.6vw, 1.3rem);
+      flex-wrap: wrap;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .unit {
+      min-width: clamp(108px, 16vw, 210px);
+      padding: clamp(0.9rem, 2.4vw, 1.7rem);
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.025));
+      border: 1px solid rgba(255, 127, 140, 0.24);
+      box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.35);
+    }
+
+    .number {
+      display: block;
+      font-size: clamp(3rem, 8vw, 7.6rem);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.06em;
+      font-variant-numeric: tabular-nums;
+      color: #fff0d4;
+      text-shadow: 0 0 28px rgba(255, 127, 140, 0.30);
+    }
+
+    .label {
+      display: block;
+      margin-top: 0.75rem;
+      color: var(--muted);
+      font-size: clamp(0.72rem, 1.5vw, 0.95rem);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .status {
+      min-height: 1.5em;
+      margin: 1.3rem 0 0;
+      color: #ffd1cb;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(1.1rem, 3vw, 2rem);
+      font-weight: 800;
+      letter-spacing: 0.1em;
+    }
+
+    .sigil {
+      position: fixed;
+      width: 44vmax;
+      height: 44vmax;
+      border: 2px solid rgba(255, 127, 140, 0.09);
+      border-radius: 50%;
+      z-index: 0;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.45; }
+      50% { transform: scale(1.06); opacity: 0.75; }
+    }
+
+    .done h1 {
+      animation: glow 1.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      to {
+        text-shadow:
+          0 0 28px rgba(246, 207, 134, 0.58),
+          0 0 70px rgba(255, 127, 140, 0.64),
+          0 6px 0 rgba(0, 0, 0, 0.42);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sigil"></div>
+
+  <main id="card">
+    <div class="eyebrow" aria-label="three hearts">
+      <svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+      <svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+      <svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+    </div>
+
+    <h1>Cem Manit Timer</h1>
+
+    <section class="timer" aria-label="Countdown timer">
+      <div class="unit">
+        <span id="months" class="number">00</span>
+        <span class="label">Months</span>
+      </div>
+      <div class="unit">
+        <span id="days" class="number">00</span>
+        <span class="label">Days</span>
+      </div>
+      <div class="unit">
+        <span id="hours" class="number">00</span>
+        <span class="label">Hours</span>
+      </div>
+      <div class="unit">
+        <span id="minutes" class="number">00</span>
+        <span class="label">Minutes</span>
+      </div>
+      <div class="unit">
+        <span id="seconds" class="number">00</span>
+        <span class="label">Seconds</span>
+      </div>
+    </section>
+
+    <p id="status" class="status">(not optional)</p>
+  </main>
+
+  <script>
+    const target = new Date('2026-12-26T15:58:04+01:00');
+
+    const card = document.getElementById('card');
+    const status = document.getElementById('status');
+
+    const monthsEl = document.getElementById('months');
+    const daysEl = document.getElementById('days');
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+
+    function pad(value, length = 2) {
+      return String(value).padStart(length, '0');
+    }
+
+    function addMonthsClamped(date, months) {
+      const result = new Date(date.getTime());
+      const originalDay = result.getDate();
+
+      result.setDate(1);
+      result.setMonth(result.getMonth() + months);
+
+      const lastDayOfTargetMonth = new Date(
+        result.getFullYear(),
+        result.getMonth() + 1,
+        0
+      ).getDate();
+
+      result.setDate(Math.min(originalDay, lastDayOfTargetMonth));
+
+      return result;
+    }
+
+    function getRemainingParts(now, targetDate) {
+      let months =
+        (targetDate.getFullYear() - now.getFullYear()) * 12 +
+        targetDate.getMonth() -
+        now.getMonth();
+
+      let anchor = addMonthsClamped(now, months);
+
+      if (anchor > targetDate) {
+        months -= 1;
+        anchor = addMonthsClamped(now, months);
+      }
+
+      const remainingMs = Math.max(0, targetDate - anchor);
+      const totalSeconds = Math.floor(remainingMs / 1000);
+
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      return { months, days, hours, minutes, seconds };
+    }
+
+    function updateTimer() {
+      const now = new Date();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        monthsEl.textContent = '00';
+        daysEl.textContent = '00';
+        hoursEl.textContent = '00';
+        minutesEl.textContent = '00';
+        secondsEl.textContent = '00';
+
+        status.textContent = 'cem kapıyı aç';
+        card.classList.add('done');
+        return;
+      }
+
+      const remaining = getRemainingParts(now, target);
+
+      monthsEl.textContent = pad(remaining.months);
+      daysEl.textContent = pad(remaining.days);
+      hoursEl.textContent = pad(remaining.hours);
+      minutesEl.textContent = pad(remaining.minutes);
+      secondsEl.textContent = pad(remaining.seconds);
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
