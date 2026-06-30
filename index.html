@@ -3,21 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cem Manit Timer</title>
+  <title>Cem Manit / Ballin 3 Timers</title>
   <style>
     :root {
       --bg-1: #09030f;
       --bg-2: #24101f;
-      --gold: #f6cf86;
-      --salmon: #ff7f8c;
-      --rose: #d94b72;
+      --accent: #f6cf86;
+      --accent-2: #ff7f8c;
+      --accent-3: #d94b72;
       --text: #fff7ee;
+      --number: #fff0d4;
       --muted: #e8b2a4;
       --heart: #ff9aae;
+      --panel: rgba(8, 3, 15, 0.66);
+      --border: rgba(255, 127, 140, 0.34);
+      --glow: rgba(217, 75, 114, 0.30);
     }
 
     * {
       box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
     }
 
     body {
@@ -25,13 +33,44 @@
       min-height: 100vh;
       display: grid;
       place-items: center;
-      overflow: hidden;
+      overflow-x: hidden;
       color: var(--text);
       font-family: Georgia, 'Times New Roman', serif;
       background:
-        radial-gradient(circle at 50% 25%, rgba(255, 127, 140, 0.24), transparent 32rem),
-        radial-gradient(circle at 20% 80%, rgba(217, 75, 114, 0.27), transparent 28rem),
+        radial-gradient(circle at 50% 25%, color-mix(in srgb, var(--accent-2) 24%, transparent), transparent 32rem),
+        radial-gradient(circle at 20% 80%, color-mix(in srgb, var(--accent-3) 27%, transparent), transparent 28rem),
         linear-gradient(135deg, var(--bg-1), var(--bg-2) 55%, #07040b);
+      transition: background 450ms ease, color 450ms ease;
+    }
+
+    body[data-theme="cem"] {
+      --bg-1: #09030f;
+      --bg-2: #24101f;
+      --accent: #f6cf86;
+      --accent-2: #ff7f8c;
+      --accent-3: #d94b72;
+      --text: #fff7ee;
+      --number: #fff0d4;
+      --muted: #e8b2a4;
+      --heart: #ff9aae;
+      --panel: rgba(8, 3, 15, 0.66);
+      --border: rgba(255, 127, 140, 0.34);
+      --glow: rgba(217, 75, 114, 0.30);
+    }
+
+    body[data-theme="ballin"] {
+      --bg-1: #070611;
+      --bg-2: #181336;
+      --accent: #f3c969;
+      --accent-2: #ff965c;
+      --accent-3: #8c284e;
+      --text: #fff7e6;
+      --number: #fff2c9;
+      --muted: #d8b98a;
+      --heart: #f3c969;
+      --panel: rgba(5, 5, 17, 0.70);
+      --border: rgba(243, 201, 105, 0.32);
+      --glow: rgba(182, 34, 50, 0.30);
     }
 
     body::before,
@@ -41,9 +80,10 @@
       inset: -20vmax;
       pointer-events: none;
       background:
-        conic-gradient(from 0deg, transparent, rgba(246, 207, 134, 0.10), transparent, rgba(255, 127, 140, 0.14), transparent);
+        conic-gradient(from 0deg, transparent, color-mix(in srgb, var(--accent) 12%, transparent), transparent, color-mix(in srgb, var(--accent-2) 15%, transparent), transparent);
       animation: slowSpin 28s linear infinite;
       filter: blur(3px);
+      transition: opacity 450ms ease;
     }
 
     body::after {
@@ -56,84 +96,199 @@
       to { transform: rotate(360deg); }
     }
 
-    main {
+    .shell {
       position: relative;
       z-index: 1;
-      width: min(96vw, 1280px);
-      padding: clamp(1.5rem, 5vw, 4rem);
-      text-align: center;
-      border: 1px solid rgba(255, 127, 140, 0.34);
-      border-radius: 32px;
-      background: rgba(8, 3, 15, 0.66);
-      box-shadow:
-        0 0 84px rgba(217, 75, 114, 0.30),
-        inset 0 0 50px rgba(246, 207, 134, 0.05);
+      width: min(96vw, 1320px);
+      padding: clamp(1rem, 3vw, 2rem);
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0.85rem;
+      margin: 0 auto clamp(1rem, 3vw, 1.6rem);
+      padding: 0.45rem;
+      width: fit-content;
+      max-width: 100%;
+      border: 1px solid color-mix(in srgb, var(--accent-2) 25%, transparent);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.24);
+      box-shadow: 0 0 44px color-mix(in srgb, var(--accent-3) 20%, transparent);
       backdrop-filter: blur(14px);
+    }
+
+    .tab-button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 0.82rem clamp(1rem, 2.6vw, 1.45rem);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.62rem;
+      cursor: pointer;
+      color: var(--muted);
+      background: transparent;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(0.82rem, 2vw, 1rem);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: transform 180ms ease, background 220ms ease, color 220ms ease, box-shadow 220ms ease;
+    }
+
+    .tab-button:hover {
+      transform: translateY(-1px);
+      color: var(--text);
+    }
+
+    .tab-button[aria-selected="true"] {
+      color: #1b0a13;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 28px color-mix(in srgb, var(--accent-2) 42%, transparent);
+    }
+
+    .tab-icon {
+      width: 1.28em;
+      height: 1.28em;
+      display: block;
+      fill: currentColor;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex: 0 0 auto;
+    }
+
+    main {
+      position: relative;
+      min-height: 560px;
+      padding: clamp(1.45rem, 5vw, 4rem);
+      text-align: center;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      background: var(--panel);
+      box-shadow:
+        0 0 84px var(--glow),
+        inset 0 0 50px color-mix(in srgb, var(--accent) 7%, transparent);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+      transition: border-color 350ms ease, box-shadow 350ms ease, background 350ms ease;
+    }
+
+    .sigil {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 44vmax;
+      height: 44vmax;
+      translate: -50% -50%;
+      border: 2px solid color-mix(in srgb, var(--accent-2) 10%, transparent);
+      border-radius: 50%;
+      z-index: -1;
+      animation: pulse 4s ease-in-out infinite;
+      transition: border-color 350ms ease;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.45; }
+      50% { transform: scale(1.06); opacity: 0.75; }
+    }
+
+    .panel {
+      display: none;
+      animation: fadeUp 260ms ease both;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .eyebrow {
       margin: 0 0 1rem;
+      min-height: 2.2rem;
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 0.5rem;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(0.9rem, 2vw, 1.2rem);
+      font-weight: 800;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
     }
 
     .heart-icon {
       width: clamp(24px, 3.2vw, 34px);
       height: auto;
       fill: var(--heart);
-      filter: drop-shadow(0 0 10px rgba(255, 154, 174, 0.28));
+      filter: drop-shadow(0 0 10px color-mix(in srgb, var(--heart) 32%, transparent));
       flex: 0 0 auto;
+    }
+
+    .mini-d20 {
+      width: clamp(31px, 4vw, 44px);
+      height: auto;
+      fill: none;
+      stroke: var(--accent);
+      filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 32%, transparent));
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(3.4rem, 10vw, 9rem);
+      font-size: clamp(3.05rem, 9.5vw, 9rem);
       line-height: 0.88;
       letter-spacing: 0.03em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--accent);
       text-shadow:
-        0 0 18px rgba(246, 207, 134, 0.26),
+        0 0 18px color-mix(in srgb, var(--accent) 28%, transparent),
         0 5px 0 rgba(0, 0, 0, 0.42),
-        0 14px 34px rgba(255, 127, 140, 0.44);
+        0 14px 34px color-mix(in srgb, var(--accent-2) 46%, transparent);
     }
 
     .timer {
       margin: clamp(2rem, 6vw, 4rem) 0 1rem;
       display: flex;
       justify-content: center;
-      gap: clamp(0.6rem, 1.6vw, 1.3rem);
+      gap: clamp(0.58rem, 1.5vw, 1.25rem);
       flex-wrap: wrap;
       font-family: Arial, Helvetica, sans-serif;
     }
 
     .unit {
-      min-width: clamp(108px, 16vw, 210px);
-      padding: clamp(0.9rem, 2.4vw, 1.7rem);
+      min-width: clamp(104px, 15vw, 206px);
+      padding: clamp(0.9rem, 2.35vw, 1.7rem);
       border-radius: 24px;
       background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.025));
-      border: 1px solid rgba(255, 127, 140, 0.24);
+      border: 1px solid color-mix(in srgb, var(--accent-2) 28%, transparent);
       box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.35);
+      transition: border-color 350ms ease;
     }
 
     .number {
       display: block;
-      font-size: clamp(3rem, 8vw, 7.6rem);
+      font-size: clamp(2.8rem, 7.7vw, 7.5rem);
       font-weight: 900;
       line-height: 0.9;
       letter-spacing: -0.06em;
       font-variant-numeric: tabular-nums;
-      color: #fff0d4;
-      text-shadow: 0 0 28px rgba(255, 127, 140, 0.30);
+      color: var(--number);
+      text-shadow: 0 0 28px color-mix(in srgb, var(--accent-2) 34%, transparent);
     }
 
     .label {
       display: block;
       margin-top: 0.75rem;
       color: var(--muted);
-      font-size: clamp(0.72rem, 1.5vw, 0.95rem);
+      font-size: clamp(0.7rem, 1.45vw, 0.95rem);
       letter-spacing: 0.22em;
       text-transform: uppercase;
     }
@@ -141,26 +296,16 @@
     .status {
       min-height: 1.5em;
       margin: 1.3rem 0 0;
-      color: #ffd1cb;
+      color: color-mix(in srgb, var(--accent-2) 46%, #ffffff);
       font-family: Arial, Helvetica, sans-serif;
       font-size: clamp(1.1rem, 3vw, 2rem);
       font-weight: 800;
       letter-spacing: 0.1em;
+      text-transform: uppercase;
     }
 
-    .sigil {
-      position: fixed;
-      width: 44vmax;
-      height: 44vmax;
-      border: 2px solid rgba(255, 127, 140, 0.09);
-      border-radius: 50%;
-      z-index: 0;
-      animation: pulse 4s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.45; }
-      50% { transform: scale(1.06); opacity: 0.75; }
+    .status.no-caps {
+      text-transform: none;
     }
 
     .done h1 {
@@ -170,68 +315,174 @@
     @keyframes glow {
       to {
         text-shadow:
-          0 0 28px rgba(246, 207, 134, 0.58),
-          0 0 70px rgba(255, 127, 140, 0.64),
+          0 0 28px color-mix(in srgb, var(--accent) 58%, transparent),
+          0 0 70px color-mix(in srgb, var(--accent-2) 64%, transparent),
           0 6px 0 rgba(0, 0, 0, 0.42);
+      }
+    }
+
+    @media (max-width: 700px) {
+      body {
+        overflow-y: auto;
+      }
+
+      .shell {
+        padding: 0.8rem;
+      }
+
+      .tabs {
+        width: 100%;
+        gap: 0.4rem;
+      }
+
+      .tab-button {
+        flex: 1 1 0;
+        padding-inline: 0.65rem;
+        letter-spacing: 0.08em;
+      }
+
+      main {
+        min-height: auto;
+        border-radius: 26px;
+      }
+
+      .timer {
+        gap: 0.65rem;
+      }
+
+      .unit {
+        min-width: min(43vw, 190px);
       }
     }
   </style>
 </head>
-<body>
-  <div class="sigil"></div>
+<body data-theme="cem">
+  <div class="shell">
+    <nav class="tabs" role="tablist" aria-label="Timer tabs">
+      <button class="tab-button" id="tab-cem" type="button" role="tab" aria-selected="true" aria-controls="panel-cem" data-tab="cem">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        CEM MANIT
+      </button>
 
-  <main id="card">
-    <div class="eyebrow" aria-label="three hearts">
-      <svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-      </svg>
-      <svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-      </svg>
-      <svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-      </svg>
-    </div>
+      <button class="tab-button" id="tab-ballin" type="button" role="tab" aria-selected="false" aria-controls="panel-ballin" data-tab="ballin">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2.2 21 7v10l-9 4.8L3 17V7l9-4.8Z" fill="none"/>
+          <path d="M12 2.2V12m0 9.8V12M3 7l9 5 9-5M3 17l9-5 9 5" fill="none"/>
+          <circle cx="12" cy="12" r="1.35"/>
+          <circle cx="8.15" cy="8.35" r="0.75"/>
+          <circle cx="15.85" cy="8.35" r="0.75"/>
+        </svg>
+        BALLIN 3
+      </button>
+    </nav>
 
-    <h1>Cem Manit Timer</h1>
+    <main id="card">
+      <div class="sigil"></div>
 
-    <section class="timer" aria-label="Countdown timer">
-      <div class="unit">
-        <span id="months" class="number">00</span>
-        <span class="label">Months</span>
-      </div>
-      <div class="unit">
-        <span id="days" class="number">00</span>
-        <span class="label">Days</span>
-      </div>
-      <div class="unit">
-        <span id="hours" class="number">00</span>
-        <span class="label">Hours</span>
-      </div>
-      <div class="unit">
-        <span id="minutes" class="number">00</span>
-        <span class="label">Minutes</span>
-      </div>
-      <div class="unit">
-        <span id="seconds" class="number">00</span>
-        <span class="label">Seconds</span>
-      </div>
-    </section>
+      <section class="panel active" id="panel-cem" role="tabpanel" aria-labelledby="tab-cem">
+        <div class="eyebrow" aria-label="three hearts">
+          <svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+          <svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+          <svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
 
-    <p id="status" class="status">(not optional)</p>
-  </main>
+        <h1>Cem Manit Timer</h1>
+
+        <section class="timer" aria-label="Cem Manit countdown timer">
+          <div class="unit">
+            <span id="cem-months" class="number">00</span>
+            <span class="label">Months</span>
+          </div>
+          <div class="unit">
+            <span id="cem-days" class="number">00</span>
+            <span class="label">Days</span>
+          </div>
+          <div class="unit">
+            <span id="cem-hours" class="number">00</span>
+            <span class="label">Hours</span>
+          </div>
+          <div class="unit">
+            <span id="cem-minutes" class="number">00</span>
+            <span class="label">Minutes</span>
+          </div>
+          <div class="unit">
+            <span id="cem-seconds" class="number">00</span>
+            <span class="label">Seconds</span>
+          </div>
+        </section>
+
+        <p id="cem-status" class="status no-caps">(not optional)</p>
+      </section>
+
+      <section class="panel" id="panel-ballin" role="tabpanel" aria-labelledby="tab-ballin">
+        <div class="eyebrow">
+          <svg class="mini-d20" viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 4 58 18v28L32 60 6 46V18L32 4Z"/>
+            <path d="M32 4v28M32 60V32M6 18l26 14 26-14M6 46l26-14 26 14"/>
+            <path d="M20 25h24M23 42h18"/>
+          </svg>
+          Countdown to Thursday 8:00 PM
+        </div>
+
+        <h1>Baldur's Gate 3</h1>
+
+        <section class="timer" aria-label="Ballin 3 countdown timer">
+          <div class="unit">
+            <span id="ballin-days" class="number">00</span>
+            <span class="label">Days</span>
+          </div>
+          <div class="unit">
+            <span id="ballin-hours" class="number">00</span>
+            <span class="label">Hours</span>
+          </div>
+          <div class="unit">
+            <span id="ballin-minutes" class="number">00</span>
+            <span class="label">Minutes</span>
+          </div>
+          <div class="unit">
+            <span id="ballin-seconds" class="number">00</span>
+            <span class="label">Seconds</span>
+          </div>
+        </section>
+
+        <p id="ballin-status" class="status">The party gathers soon.</p>
+      </section>
+    </main>
+  </div>
 
   <script>
-    const target = new Date('2026-12-26T15:58:04+01:00');
+    const cemTarget = new Date('2026-12-26T15:58:04+01:00');
+    const ballinTarget = new Date('2026-07-02T20:00:00+02:00');
 
+    const body = document.body;
     const card = document.getElementById('card');
-    const status = document.getElementById('status');
+    const buttons = document.querySelectorAll('.tab-button');
+    const panels = document.querySelectorAll('.panel');
 
-    const monthsEl = document.getElementById('months');
-    const daysEl = document.getElementById('days');
-    const hoursEl = document.getElementById('hours');
-    const minutesEl = document.getElementById('minutes');
-    const secondsEl = document.getElementById('seconds');
+    const cem = {
+      months: document.getElementById('cem-months'),
+      days: document.getElementById('cem-days'),
+      hours: document.getElementById('cem-hours'),
+      minutes: document.getElementById('cem-minutes'),
+      seconds: document.getElementById('cem-seconds'),
+      status: document.getElementById('cem-status')
+    };
+
+    const ballin = {
+      days: document.getElementById('ballin-days'),
+      hours: document.getElementById('ballin-hours'),
+      minutes: document.getElementById('ballin-minutes'),
+      seconds: document.getElementById('ballin-seconds'),
+      status: document.getElementById('ballin-status')
+    };
 
     function pad(value, length = 2) {
       return String(value).padStart(length, '0');
@@ -251,11 +502,10 @@
       ).getDate();
 
       result.setDate(Math.min(originalDay, lastDayOfTargetMonth));
-
       return result;
     }
 
-    function getRemainingParts(now, targetDate) {
+    function getRemainingMonthParts(now, targetDate) {
       let months =
         (targetDate.getFullYear() - now.getFullYear()) * 12 +
         targetDate.getMonth() -
@@ -270,7 +520,6 @@
 
       const remainingMs = Math.max(0, targetDate - anchor);
       const totalSeconds = Math.floor(remainingMs / 1000);
-
       const days = Math.floor(totalSeconds / 86400);
       const hours = Math.floor((totalSeconds % 86400) / 3600);
       const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -279,33 +528,97 @@
       return { months, days, hours, minutes, seconds };
     }
 
-    function updateTimer() {
+    function getRemainingDayParts(now, targetDate) {
+      const remainingMs = Math.max(0, targetDate - now);
+      const totalSeconds = Math.floor(remainingMs / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      return { days, hours, minutes, seconds };
+    }
+
+    function updateCemTimer() {
       const now = new Date();
-      const diff = target - now;
+      const diff = cemTarget - now;
 
       if (diff <= 0) {
-        monthsEl.textContent = '00';
-        daysEl.textContent = '00';
-        hoursEl.textContent = '00';
-        minutesEl.textContent = '00';
-        secondsEl.textContent = '00';
-
-        status.textContent = 'cem kapıyı aç';
-        card.classList.add('done');
+        cem.months.textContent = '00';
+        cem.days.textContent = '00';
+        cem.hours.textContent = '00';
+        cem.minutes.textContent = '00';
+        cem.seconds.textContent = '00';
+        cem.status.textContent = 'cem kapıyı aç';
         return;
       }
 
-      const remaining = getRemainingParts(now, target);
+      const remaining = getRemainingMonthParts(now, cemTarget);
 
-      monthsEl.textContent = pad(remaining.months);
-      daysEl.textContent = pad(remaining.days);
-      hoursEl.textContent = pad(remaining.hours);
-      minutesEl.textContent = pad(remaining.minutes);
-      secondsEl.textContent = pad(remaining.seconds);
+      cem.months.textContent = pad(remaining.months);
+      cem.days.textContent = pad(remaining.days);
+      cem.hours.textContent = pad(remaining.hours);
+      cem.minutes.textContent = pad(remaining.minutes);
+      cem.seconds.textContent = pad(remaining.seconds);
     }
 
-    updateTimer();
-    setInterval(updateTimer, 1000);
+    function updateBallinTimer() {
+      const now = new Date();
+      const diff = ballinTarget - now;
+
+      if (diff <= 0) {
+        ballin.days.textContent = '00';
+        ballin.hours.textContent = '00';
+        ballin.minutes.textContent = '00';
+        ballin.seconds.textContent = '00';
+        ballin.status.textContent = "It's time. Roll initiative.";
+        return;
+      }
+
+      const remaining = getRemainingDayParts(now, ballinTarget);
+
+      ballin.days.textContent = pad(remaining.days);
+      ballin.hours.textContent = pad(remaining.hours);
+      ballin.minutes.textContent = pad(remaining.minutes);
+      ballin.seconds.textContent = pad(remaining.seconds);
+    }
+
+    function setTab(tabName, updateHash = true) {
+      const theme = tabName === 'ballin' ? 'ballin' : 'cem';
+      body.dataset.theme = theme;
+      card.classList.remove('done');
+
+      buttons.forEach((button) => {
+        const selected = button.dataset.tab === tabName;
+        button.setAttribute('aria-selected', selected ? 'true' : 'false');
+      });
+
+      panels.forEach((panel) => {
+        panel.classList.toggle('active', panel.id === `panel-${tabName}`);
+      });
+
+      if (updateHash) {
+        history.replaceState(null, '', tabName === 'ballin' ? '#ballin3' : '#cem');
+      }
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => setTab(button.dataset.tab));
+    });
+
+    function bootFromHash() {
+      const hash = window.location.hash.toLowerCase();
+      setTab(hash.includes('ballin') ? 'ballin' : 'cem', false);
+    }
+
+    function updateAllTimers() {
+      updateCemTimer();
+      updateBallinTimer();
+    }
+
+    bootFromHash();
+    updateAllTimers();
+    setInterval(updateAllTimers, 1000);
   </script>
 </body>
 </html>
